@@ -1,512 +1,227 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#07171c">
-  <title>A birthday story — V2</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #07171c;
-      --bg-deep: #041014;
-      --ink: #f4f0e8;
-      --muted: rgba(244, 240, 232, .58);
-      --line: rgba(244, 240, 232, .17);
-      --accent: #d996aa;
-      --mist-a: #3b8391;
-      --mist-b: #a36c88;
-      --serif: "Newsreader", Georgia, serif;
-      --sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --ease: cubic-bezier(.76, 0, .24, 1);
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1338">
+<title>Happy birthday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Newsreader:opsz,wght@6..72,300;6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0b1338; --bg-deep:#03050f; --ink:#f3effa; --muted:rgba(243,239,250,.6); --line:rgba(243,239,250,.18);
+  --accent:#ffffff; --paper:#f3effa; --mist-a:#a98bd6; --mist-b:#1fb4d0;
+  --serif:"Newsreader",Georgia,serif; --sans:"DM Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --ease:cubic-bezier(.76,0,.24,1);
+}
+body[data-theme="light"]{
+  color-scheme:light;
+  --bg:#c3cdcd; --bg-deep:#a59b98; --ink:#5b3d2a; --muted:rgba(91,61,42,.75); --line:rgba(91,61,42,.22);
+  --accent:#b32024; --paper:#e9eeee; --mist-a:#de6653; --mist-b:#a59b98;
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:var(--sans);color:var(--ink);background:radial-gradient(120% 90% at 50% 100%,var(--bg-deep),var(--bg));overflow:hidden;transition:background .6s,color .6s}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
 
-    body[data-theme="light"] {
-      color-scheme: light;
-      --bg: #f1bdba;
-      --bg-deep: #d988a6;
-      --ink: #210d1a;
-      --muted: rgba(33, 13, 26, .6);
-      --line: rgba(33, 13, 26, .18);
-      --accent: #6f204d;
-      --mist-a: #a784c2;
-      --mist-b: #ed936f;
-    }
+/* smoke: dark mode only */
+.smoke{position:fixed;inset:-15%;z-index:0;pointer-events:none;overflow:hidden;opacity:.65;mix-blend-mode:screen;transition:opacity 1s}
+body[data-theme="light"] .smoke{opacity:0}
+.smoke i{position:absolute;border-radius:50%;filter:blur(60px);background:radial-gradient(circle,color-mix(in srgb,var(--mist-a) 55%,transparent),transparent 68%);animation:drift 32s ease-in-out infinite alternate}
+.smoke i:nth-child(1){width:62vmax;height:58vmax;left:-14%;top:6%;animation-duration:36s}
+.smoke i:nth-child(2){width:50vmax;height:50vmax;right:-12%;top:32%;background:radial-gradient(circle,color-mix(in srgb,var(--mist-b) 50%,transparent),transparent 68%);animation-duration:27s;animation-delay:-9s}
+.smoke i:nth-child(3){width:46vmax;height:44vmax;left:26%;bottom:-22%;animation-duration:41s;animation-delay:-18s}
+.smoke i:nth-child(4){width:54vmax;height:40vmax;right:6%;bottom:-26%;background:radial-gradient(circle,color-mix(in srgb,var(--mist-b) 42%,transparent),transparent 68%);animation-duration:23s;animation-delay:-4s}
+@keyframes drift{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(4vw,-6vh,0) scale(1.12)}100%{transform:translate3d(-5vw,4vh,0) scale(.96)}}
 
-    * { box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; margin: 0; overscroll-behavior: none; }
-    body {
-      overflow: hidden;
-      background: var(--bg);
-      color: var(--ink);
-      font-family: var(--sans);
-      -webkit-font-smoothing: antialiased;
-      transition: background .8s ease, color .8s ease;
-    }
-    button { border: 0; color: inherit; font: inherit; cursor: pointer; }
-    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+/* header */
+header{position:fixed;top:0;left:0;right:0;z-index:30;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:max(20px,env(safe-area-inset-top)) 24px 0}
+.modes{display:flex;gap:22px;font-size:13px;letter-spacing:.06em}
+.modes button{padding:4px 0;color:var(--muted);border-bottom:1px solid transparent;transition:color .3s,border-color .3s}
+.modes button[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+#back{justify-self:start;font-size:13px;letter-spacing:.06em;color:var(--muted);opacity:0;visibility:hidden;transition:opacity .4s}
+body.zoomed #back{opacity:1;visibility:visible}
+#back:hover{color:var(--ink)}
 
-    .ambient {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 76% 18%, color-mix(in srgb, var(--mist-a) 30%, transparent), transparent 32%),
-        linear-gradient(155deg, var(--bg-deep), var(--bg));
-      transition: background .8s ease;
-    }
-    .ambient::before, .ambient::after {
-      content: "";
-      position: absolute;
-      width: 78vmax;
-      height: 48vmax;
-      border-radius: 50%;
-      filter: blur(70px);
-      opacity: .33;
-      animation: breathe 16s ease-in-out infinite alternate;
-    }
-    .ambient::before { left: -30vmax; bottom: -30vmax; background: var(--mist-a); }
-    .ambient::after { right: -35vmax; bottom: -28vmax; background: var(--mist-b); animation-delay: -8s; }
-    @keyframes breathe { to { transform: translate3d(6vw, -3vh, 0) scale(1.08); } }
+/* home row */
+.home{position:fixed;inset:0;z-index:5;display:flex;overflow-y:auto;padding:84px 5vw 40px;transition:transform .7s var(--ease),opacity .5s,filter .6s}
+body.zoomed .home{transform:scale(1.35);opacity:0;filter:blur(6px);pointer-events:none}
+.row{margin:auto;width:min(1100px,100%);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,3vw,44px)}
+.product{display:block;text-align:left;width:100%}
+.art{position:relative;aspect-ratio:3/4;display:grid;place-items:center;border:1px solid var(--line);background:color-mix(in srgb,var(--bg) 55%,transparent);overflow:hidden;container-type:size;transition:border-color .3s,transform .5s var(--ease)}
+.product:hover .art{border-color:var(--ink);transform:translateY(-4px)}
+.code{display:block;margin-top:14px;font-size:13px;letter-spacing:.08em}
+.name{display:block;margin-top:3px;font-size:13px;color:var(--muted)}
+.a-pics{position:absolute;left:24%;top:9.5%;display:grid;grid-template-columns:repeat(2,var(--s));grid-auto-rows:var(--s);gap:6px;--s:53cqw}
+.a-pics span{background:var(--mist-a);opacity:.55}
+.a-pics span:nth-child(2){background:var(--mist-b);opacity:.8}
+.a-pics span:nth-child(3){opacity:.3}
+.a-letter{width:52%;aspect-ratio:3/4;border:1px solid var(--ink);padding:14px 12px;background:repeating-linear-gradient(transparent 0 9px,var(--line) 9px 10px)}
+.a-music{width:58%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,var(--ink) 0 6%,var(--bg-deep) 6% 24%,transparent 24%),repeating-radial-gradient(circle,var(--line) 0 2px,transparent 2px 7px);border:1px solid var(--ink)}
 
-    .noise {
-      position: fixed;
-      inset: 0;
-      z-index: 20;
-      opacity: .055;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E");
-    }
+/* zoomed views */
+.view{position:fixed;inset:0;z-index:10;overflow-y:auto;padding:84px 5vw 48px;opacity:0;visibility:hidden;transform:scale(.7);transition:transform .7s var(--ease),opacity .5s,visibility 0s .7s}
+.view.open{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.view h2{font-family:var(--serif);font-weight:300;line-height:1.05;font-size:clamp(2.4rem,6.5vw,5rem)}
+.view .lede{max-width:44ch;margin:18px auto 0;color:var(--muted);line-height:1.8}
+.grid{width:min(1100px,100%);margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr));gap:10px}
+.photo{aspect-ratio:1;display:flex;align-items:flex-end;padding:10px;font-size:12px;color:var(--muted);border:1px solid var(--line);background:linear-gradient(150deg,color-mix(in srgb,var(--mist-a) 40%,transparent),transparent 70%)}
+.photo:nth-child(3n+2){background:linear-gradient(150deg,color-mix(in srgb,var(--mist-b) 45%,transparent),transparent 70%)}
+.photo img{width:100%;height:100%;object-fit:cover}
+.centered{min-height:100%;display:grid;place-content:center;justify-items:center;text-align:center}
+.songs{width:min(880px,100%);margin:34px auto 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 22px;text-align:left}
+.song{margin:0}
+.frame{aspect-ratio:16/9;border:1px solid var(--line);background:rgba(0,0,0,.25)}
+.frame iframe{display:block;width:100%;height:100%;border:0}
+.song figcaption{margin-top:10px;font-size:13px;letter-spacing:.08em}
+#letter{padding:0;overflow:hidden}
+.story{height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;touch-action:none}
+.chapter{min-height:100%;display:grid;place-content:center;justify-items:center;text-align:center;padding:84px 6vw}
+.chapter p{max-width:46ch;margin-top:24px;color:var(--muted);line-height:1.8}
+.chapter:last-child h2{color:var(--accent)}
+.hint{margin-top:34px;font-size:12px;letter-spacing:.08em;color:var(--muted)}
 
-    /* Intro rail: hero → theme → music */
-    #intro {
-      position: fixed;
-      inset: 0;
-      z-index: 10;
-      transition: opacity .65s ease, visibility .65s;
-    }
-    #intro.is-gone { opacity: 0; visibility: hidden; pointer-events: none; }
-    #introRail {
-      display: flex;
-      width: 300vw;
-      height: 100%;
-      transform: translate3d(0, 0, 0);
-      transition: transform .9s var(--ease);
-    }
-    .panel {
-      position: relative;
-      flex: 0 0 100vw;
-      min-width: 0;
-      height: 100%;
-      display: grid;
-      place-items: center;
-      padding: clamp(28px, 6vw, 84px);
-      text-align: center;
-    }
-    .panel-inner { width: min(760px, 100%); }
-    .kicker {
-      margin: 0 0 20px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: .19em;
-      text-transform: uppercase;
-    }
-    h1, h2 { margin: 0; font-family: var(--serif); font-weight: 400; letter-spacing: -.035em; }
-    h1 { font-size: clamp(4rem, 11vw, 9rem); line-height: .82; }
-    h1 em { display: block; color: var(--accent); font-weight: 300; }
-    h2 { font-size: clamp(2.7rem, 7vw, 5.8rem); line-height: .96; }
-    .lede { max-width: 42ch; margin: 24px auto 0; color: var(--muted); line-height: 1.65; }
-
-    .step {
-      position: fixed;
-      top: max(24px, env(safe-area-inset-top));
-      left: clamp(24px, 4vw, 60px);
-      z-index: 30;
-      color: var(--muted);
-      font-size: 11px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-    }
-    .progress {
-      position: fixed;
-      top: max(28px, env(safe-area-inset-top));
-      right: clamp(24px, 4vw, 60px);
-      z-index: 30;
-      display: flex;
-      gap: 7px;
-    }
-    .progress i { width: 22px; height: 1px; background: var(--line); transition: background .35s, width .35s; }
-    .progress i.on { width: 38px; background: var(--ink); }
-
-    .guide {
-      position: absolute;
-      right: clamp(24px, 4vw, 60px);
-      bottom: max(28px, env(safe-area-inset-bottom));
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: .08em;
-    }
-    .guide .arrow { display: inline-block; color: var(--ink); font-size: 22px; animation: nudgeRight 1.8s ease-in-out infinite; }
-    @keyframes nudgeRight { 50% { transform: translateX(8px); } }
-
-    .theme-options { display: grid; grid-template-columns: repeat(2, minmax(130px, 210px)); justify-content: center; gap: 14px; margin-top: 38px; }
-    .theme-card {
-      position: relative;
-      height: 190px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      background: transparent;
-      transition: transform .3s ease, border-color .3s ease;
-    }
-    .theme-card:hover { transform: translateY(-5px); }
-    .theme-card[aria-pressed="true"] { border-color: var(--ink); }
-    .theme-card::before { content: ""; position: absolute; inset: 0; }
-    .theme-card.dark::before { background: linear-gradient(150deg, #173e47, #051216 68%); }
-    .theme-card.light::before { background: linear-gradient(150deg, #a98cc2, #ed8f9f 55%, #f2bd8e); }
-    .theme-card span { position: absolute; left: 16px; bottom: 15px; color: #fff; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
-    .theme-card[aria-pressed="true"]::after { content: "selected"; position: absolute; top: 13px; right: 13px; color: #fff; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
-
-    .player {
-      width: min(580px, 100%);
-      margin: 34px auto 0;
-      padding: 18px;
-      border: 1px solid var(--line);
-      background: color-mix(in srgb, var(--bg) 64%, transparent);
-      backdrop-filter: blur(14px);
-    }
-    .player iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
-    .down-guide { right: 50%; transform: translateX(50%); flex-direction: column; gap: 6px; }
-    .down-guide .arrow { animation: nudgeDown 1.8s ease-in-out infinite; }
-    @keyframes nudgeDown { 50% { transform: translateY(8px); } }
-
-    /* Story rail: vertical story → final message */
-    #journey {
-      position: fixed;
-      inset: 0;
-      z-index: 5;
-      display: flex;
-      width: 200vw;
-      transform: translate3d(0, 0, 0);
-      transition: transform .95s var(--ease);
-      visibility: hidden;
-    }
-    #journey.is-active { visibility: visible; }
-    #journey.is-final { transform: translate3d(-100vw, 0, 0); }
-    #storyViewport, #final { flex: 0 0 100vw; width: 100vw; height: 100%; }
-    #storyViewport { overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scroll-snap-type: y mandatory; scrollbar-width: none; }
-    #storyViewport::-webkit-scrollbar { display: none; }
-    .chapter {
-      min-height: 100%;
-      display: grid;
-      place-items: center;
-      padding: clamp(34px, 8vw, 110px);
-      text-align: center;
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
-    }
-    .chapter-inner { max-width: 740px; }
-    .chapter-number { display: block; margin-bottom: 23px; color: var(--accent); font-family: var(--serif); font-size: 18px; }
-    .chapter h2 { font-size: clamp(2.6rem, 7vw, 5.7rem); }
-    .chapter p { max-width: 48ch; margin: 24px auto 0; color: var(--muted); font-size: clamp(1rem, 1.5vw, 1.14rem); line-height: 1.8; }
-    .chapter .eyeline { width: 1px; height: 52px; margin: 34px auto 0; background: linear-gradient(var(--accent), transparent); }
-    .chapter.last .guide { position: static; justify-content: center; margin-top: 38px; }
-
-    #final { display: grid; place-items: center; padding: clamp(34px, 8vw, 110px); text-align: center; }
-    #final .panel-inner { max-width: 900px; }
-    #final h2 { font-size: clamp(4rem, 12vw, 9.5rem); line-height: .82; }
-    #final h2 em { display: block; color: var(--accent); font-weight: 300; }
-    .restart { margin-top: 38px; padding: 12px 18px; border-bottom: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
-
-    .nav-button {
-      position: fixed;
-      z-index: 40;
-      right: clamp(20px, 4vw, 58px);
-      top: 50%;
-      width: 48px;
-      height: 48px;
-      border: 1px solid var(--line);
-      border-radius: 50%;
-      background: color-mix(in srgb, var(--bg) 30%, transparent);
-      transform: translateY(-50%);
-      backdrop-filter: blur(8px);
-      transition: opacity .3s, border-color .3s;
-    }
-    .nav-button:hover { border-color: var(--ink); }
-    .nav-button[hidden] { display: none; }
-
-    @media (max-width: 640px) {
-      .theme-options { grid-template-columns: repeat(2, 1fr); }
-      .theme-card { height: 160px; }
-      .panel { padding-inline: 24px; }
-      .nav-button { top: auto; bottom: 24px; transform: none; }
-      .guide { bottom: 34px; }
-      .down-guide { bottom: 22px; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-    }
-  </style>
+/* dark mode: all picture blocks one solid color */
+body[data-theme="dark"] .a-pics span{background:#3a3664;opacity:1}
+body[data-theme="dark"] .photo,body[data-theme="dark"] .photo:nth-child(3n+2){background:#3a3664}
+/* light mode: all picture blocks one solid color */
+body[data-theme="light"] .a-pics span{background:#d29489;opacity:1}
+body[data-theme="light"] .photo,body[data-theme="light"] .photo:nth-child(3n+2){background:#d29489}
+@media (max-width:720px){
+  .row{grid-template-columns:1fr;gap:26px}
+  .art{aspect-ratio:3/4}
+  .product{max-width:340px;margin-inline:auto}
+  header{padding-inline:18px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+</style>
 </head>
 <body data-theme="dark">
-  <div class="ambient" aria-hidden="true"></div>
-  <div class="noise" aria-hidden="true"></div>
+<div class="smoke" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
-  <div class="step" id="stepLabel">01 / 03 · Welcome</div>
-  <div class="progress" id="progress" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+<header>
+  <button id="back" type="button">Back</button>
+  <div class="modes" role="group" aria-label="Color mode">
+    <button type="button" data-mode="dark" aria-pressed="true">Dark</button>
+    <button type="button" data-mode="light" aria-pressed="false">Light</button>
+  </div>
+  <span></span>
+</header>
 
-  <section id="intro" aria-label="Introduction">
-    <div id="introRail">
-      <article class="panel" id="hero">
-        <div class="panel-inner">
-          <p class="kicker">September 23 · a little story for you</p>
-          <h1>Happy birthday,<em>[Name].</em></h1>
-          <p class="lede">I made you something small: a soundtrack, a few memories, and one thing I wanted to say properly.</p>
-        </div>
-        <div class="guide"><span>scroll right</span><span class="arrow">→</span></div>
-      </article>
+<main class="home" id="home">
+  <div class="row">
+    <button class="product" data-open="pics" type="button">
+      <span class="art"><span class="a-pics"><span></span><span></span><span></span><span></span></span></span>
+      <span class="code">PH-01</span><span class="name">Recent pics</span>
+    </button>
+    <button class="product" data-open="letter" type="button">
+      <span class="art"><span class="a-letter"></span></span>
+      <span class="code">LT-01</span><span class="name">Birthday letter</span>
+    </button>
+    <button class="product" data-open="music" type="button">
+      <span class="art"><span class="a-music"></span></span>
+      <span class="code">MU-01</span><span class="name">Music</span>
+    </button>
+  </div>
+</main>
 
-      <article class="panel" id="theme">
-        <div class="panel-inner">
-          <p class="kicker">First, choose the atmosphere</p>
-          <h2>How should this<br>story feel?</h2>
-          <div class="theme-options" role="group" aria-label="Color theme">
-            <button class="theme-card dark" data-theme-choice="dark" aria-pressed="true"><span>After dark</span></button>
-            <button class="theme-card light" data-theme-choice="light" aria-pressed="false"><span>Golden hour</span></button>
-          </div>
-        </div>
-        <div class="guide"><span>scroll right</span><span class="arrow">→</span></div>
-      </article>
+<section class="view" id="pics" inert aria-label="Recent pics">
+  <div class="grid">
+    <!-- Swap any placeholder for: <img src="your-photo.jpg" alt="..."> -->
+    <div class="photo">PH-01</div><div class="photo">PH-02</div><div class="photo">PH-03</div>
+    <div class="photo">PH-04</div><div class="photo">PH-05</div><div class="photo">PH-06</div>
+    <div class="photo">PH-07</div><div class="photo">PH-08</div><div class="photo">PH-09</div>
+  </div>
+</section>
 
-      <article class="panel" id="music">
-        <div class="panel-inner">
-          <p class="kicker">Then, press play</p>
-          <h2>A soundtrack<br>for the way down.</h2>
-          <div class="player">
-            <!-- Replace PLAYLIST_ID_HERE with your YouTube playlist ID. -->
-            <iframe src="https://www.youtube.com/embed/videoseries?list=PLAYLIST_ID_HERE" title="Birthday playlist" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          </div>
-        </div>
-        <div class="guide down-guide"><span>now scroll down</span><span class="arrow">↓</span></div>
-      </article>
+<section class="view" id="letter" inert aria-label="Birthday letter">
+  <div class="story" id="story">
+    <div class="chapter"><h2>Happy birthday,<br>[Name].</h2><p>I wrote you something. Scroll down when you're ready.</p><span class="hint">Scroll down</span></div>
+    <div class="chapter"><h2>It started with<br>an ordinary day.</h2><p>[Edit me: set the scene. Where were you, what year was it, and what made this the beginning of something worth remembering?]</p></div>
+    <div class="chapter"><h2>Then something<br>quietly changed.</h2><p>[Edit me: add the turn. A conversation, a trip, a joke, or a decision that mattered more than either of you knew.]</p></div>
+    <div class="chapter"><h2>The part only<br>we remember.</h2><p>[Edit me: include one wonderfully specific detail, like an inside joke or a late-night song.]</p></div>
+    <div class="chapter"><h2>And somehow,<br>here we are.</h2><p>[Edit me: the last line. Keep it short, honest, and entirely yours.]</p></div>
+  </div>
+</section>
+
+<section class="view" id="music" inert aria-label="Music">
+  <div class="centered">
+    <h2>Press play.</h2>
+    <!-- Replace each VIDEO_ID_n with a YouTube video ID (the part after v= in the link) and each TESTING with the song name. -->
+    <div class="songs">
+      <figure class="song"><div class="frame"><iframe data-id="VIDEO_ID_1" title="Song 1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><figcaption>TESTING</figcaption></figure>
+      <figure class="song"><div class="frame"><iframe data-id="VIDEO_ID_2" title="Song 2" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><figcaption>TESTING</figcaption></figure>
+      <figure class="song"><div class="frame"><iframe data-id="VIDEO_ID_3" title="Song 3" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><figcaption>TESTING</figcaption></figure>
+      <figure class="song"><div class="frame"><iframe data-id="VIDEO_ID_4" title="Song 4" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><figcaption>TESTING</figcaption></figure>
     </div>
-  </section>
+  </div>
+</section>
 
-  <main id="journey" aria-hidden="true">
-    <div id="storyViewport" tabindex="-1">
-      <section class="chapter">
-        <div class="chapter-inner">
-          <span class="chapter-number">01</span>
-          <h2>It started with<br>an ordinary day.</h2>
-          <p>[Edit me — set the scene. Where were you, what year was it, and what made this the beginning of something worth remembering?]</p>
-          <div class="eyeline" aria-hidden="true"></div>
-        </div>
-      </section>
-      <section class="chapter">
-        <div class="chapter-inner">
-          <span class="chapter-number">02</span>
-          <h2>Then something<br>quietly changed.</h2>
-          <p>[Edit me — add the turn: a conversation, a trip, a joke, or a decision that mattered more than either of you knew.]</p>
-          <div class="eyeline" aria-hidden="true"></div>
-        </div>
-      </section>
-      <section class="chapter">
-        <div class="chapter-inner">
-          <span class="chapter-number">03</span>
-          <h2>The part only<br>we remember.</h2>
-          <p>[Edit me — include one wonderfully specific detail. An inside joke, a late-night song, or a moment no one else would understand.]</p>
-          <div class="eyeline" aria-hidden="true"></div>
-        </div>
-      </section>
-      <section class="chapter last">
-        <div class="chapter-inner">
-          <span class="chapter-number">04</span>
-          <h2>And somehow,<br>here we are.</h2>
-          <p>[Edit me — say where things stand now and why this person is worth celebrating today.]</p>
-          <div class="guide"><span>one last thing · scroll right</span><span class="arrow">→</span></div>
-        </div>
-      </section>
-    </div>
+<script>
+const body=document.body, home=document.getElementById('home'), back=document.getElementById('back'), songs=[...document.querySelectorAll('.song iframe')];
+let current=null, opener=null;
 
-    <section id="final">
-      <div class="panel-inner">
-        <p class="kicker">And all I really wanted to say was</p>
-        <h2>Happy birthday,<em>[Name].</em></h2>
-        <p class="lede">[Edit me — the last line. Keep it short, honest, and entirely yours.]</p>
-        <button class="restart" id="restart">start again</button>
-      </div>
-    </section>
-  </main>
+function openView(id, tile){
+  const r=tile.getBoundingClientRect(), o=`${r.left+r.width/2}px ${r.top+r.height/2}px`;
+  const v=document.getElementById(id);
+  home.style.transformOrigin=o; v.style.transformOrigin=o;
+  v.inert=false; v.classList.add('open'); body.classList.add('zoomed');
+  if(id==='music') songs.forEach(f=>f.src='https://www.youtube.com/embed/'+f.dataset.id);
+  if(id==='letter'){ storyIndex=0; document.getElementById('story').scrollTop=0; }
+  current=v; opener=tile; back.focus();
+}
+function closeView(){
+  if(!current) return;
+  current.classList.remove('open'); current.inert=true; body.classList.remove('zoomed');
+  if(current.id==='music') songs.forEach(f=>f.removeAttribute('src'));   // stops playback
+  current=null; if(opener) opener.focus();
+}
+document.querySelectorAll('.product').forEach(t=>t.addEventListener('click',()=>openView(t.dataset.open,t)));
+back.addEventListener('click',closeView);
+addEventListener('keydown',e=>{ if(e.key==='Escape') closeView(); });
 
-  <button class="nav-button" id="nextButton" aria-label="Go to next panel">→</button>
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{
+  const m=b.dataset.mode; body.dataset.theme=m;
+  document.querySelectorAll('[data-mode]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  document.querySelector('meta[name="theme-color"]').content=m==='dark'?'#0b1338':'#c3cdcd';
+}));
 
-  <script>
-    (() => {
-      const body = document.body;
-      const intro = document.getElementById('intro');
-      const introRail = document.getElementById('introRail');
-      const journey = document.getElementById('journey');
-      const story = document.getElementById('storyViewport');
-      const stepLabel = document.getElementById('stepLabel');
-      const progress = [...document.querySelectorAll('#progress i')];
-      const nextButton = document.getElementById('nextButton');
-      const chapters = [...document.querySelectorAll('.chapter')];
-      const labels = ['01 / 03 · Welcome', '02 / 03 · Atmosphere', '03 / 03 · Soundtrack'];
-      const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      let phase = 'intro';
-      let introIndex = 0;
-      let locked = false;
-      let touchX = 0;
-      let touchY = 0;
-
-      function lock(ms = 760) {
-        locked = true;
-        setTimeout(() => locked = false, reducedMotion ? 40 : ms);
-      }
-
-      function setIntro(index) {
-        introIndex = Math.max(0, Math.min(2, index));
-        introRail.style.transform = `translate3d(-${introIndex * 100}vw,0,0)`;
-        stepLabel.textContent = labels[introIndex];
-        progress.forEach((bar, i) => bar.classList.toggle('on', i === introIndex));
-        nextButton.hidden = false;
-      }
-
-      function chooseTheme(theme) {
-        body.dataset.theme = theme;
-        document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#07171c' : '#f1bdba';
-        document.querySelectorAll('[data-theme-choice]').forEach(card => {
-          card.setAttribute('aria-pressed', String(card.dataset.themeChoice === theme));
-        });
-        try { localStorage.setItem('birthday-theme-v2', theme); } catch (_) {}
-      }
-
-      function enterStory() {
-        if (phase !== 'intro' || introIndex !== 2) return;
-        phase = 'story';
-        intro.classList.add('is-gone');
-        journey.classList.add('is-active');
-        journey.setAttribute('aria-hidden', 'false');
-        stepLabel.textContent = 'The story';
-        document.getElementById('progress').style.opacity = '0';
-        nextButton.hidden = true;
-        story.scrollTop = 0;
-        story.focus({ preventScroll: true });
-        lock();
-      }
-
-      function atStoryBottom() {
-        return story.scrollHeight - story.scrollTop - story.clientHeight < 8;
-      }
-
-      function showFinal() {
-        if (phase !== 'story' || !atStoryBottom()) return;
-        phase = 'final';
-        journey.classList.add('is-final');
-        stepLabel.textContent = 'One last thing';
-        nextButton.hidden = true;
-        lock(900);
-      }
-
-      function reset() {
-        phase = 'intro';
-        journey.classList.remove('is-final', 'is-active');
-        journey.setAttribute('aria-hidden', 'true');
-        intro.classList.remove('is-gone');
-        document.getElementById('progress').style.opacity = '';
-        story.scrollTop = 0;
-        setIntro(0);
-        lock();
-      }
-
-      function next() {
-        if (locked) return;
-        if (phase === 'intro') {
-          if (introIndex < 2) { setIntro(introIndex + 1); lock(); }
-          else enterStory();
-        } else if (phase === 'story' && atStoryBottom()) showFinal();
-      }
-
-      function previous() {
-        if (locked) return;
-        if (phase === 'intro' && introIndex > 0) { setIntro(introIndex - 1); lock(); }
-        else if (phase === 'final') {
-          phase = 'story';
-          journey.classList.remove('is-final');
-          stepLabel.textContent = 'The story';
-          lock(900);
-        }
-      }
-
-      document.querySelectorAll('[data-theme-choice]').forEach(card => {
-        card.addEventListener('click', () => chooseTheme(card.dataset.themeChoice));
-      });
-      try { chooseTheme(localStorage.getItem('birthday-theme-v2') || 'dark'); } catch (_) { chooseTheme('dark'); }
-
-      nextButton.addEventListener('click', next);
-      document.getElementById('restart').addEventListener('click', reset);
-
-      window.addEventListener('wheel', event => {
-        const factor = event.deltaMode === 1 ? 18 : event.deltaMode === 2 ? innerHeight : 1;
-        let dx = event.deltaX * factor;
-        const dy = event.deltaY * factor;
-        if (event.shiftKey && Math.abs(dx) < Math.abs(dy)) dx = dy;
-
-        if (phase === 'intro') {
-          event.preventDefault();
-          if (locked) return;
-          if (Math.abs(dx) > 12 && Math.abs(dx) >= Math.abs(dy)) dx > 0 ? next() : previous();
-          else if (introIndex === 2 && dy > 18) enterStory();
-          return;
-        }
-
-        if (phase === 'story') {
-          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 14) {
-            event.preventDefault();
-            if (dx > 0) showFinal();
-          }
-          return;
-        }
-
-        if (phase === 'final') {
-          event.preventDefault();
-          if (dx < -14) previous();
-        }
-      }, { passive: false });
-
-      window.addEventListener('keydown', event => {
-        if (event.key === 'ArrowRight') { event.preventDefault(); next(); }
-        else if (event.key === 'ArrowLeft') { event.preventDefault(); previous(); }
-        else if (event.key === 'ArrowDown' && phase === 'intro' && introIndex === 2) { event.preventDefault(); enterStory(); }
-        else if (event.key === 'Home' && phase === 'final') { event.preventDefault(); reset(); }
-      });
-
-      window.addEventListener('touchstart', event => {
-        touchX = event.touches[0].clientX;
-        touchY = event.touches[0].clientY;
-      }, { passive: true });
-      window.addEventListener('touchend', event => {
-        const dx = event.changedTouches[0].clientX - touchX;
-        const dy = event.changedTouches[0].clientY - touchY;
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 48) dx < 0 ? next() : previous();
-        else if (phase === 'intro' && introIndex === 2 && dy < -48) enterStory();
-      }, { passive: true });
-
-      story.addEventListener('scroll', () => {
-        if (phase !== 'story') return;
-        const index = Math.min(chapters.length - 1, Math.max(0, Math.round(story.scrollTop / story.clientHeight)));
-        stepLabel.textContent = `The story · ${String(index + 1).padStart(2, '0')} / ${String(chapters.length).padStart(2, '0')}`;
-      }, { passive: true });
-    })();
-  </script>
+/* story: one chapter per scroll, eased glide (no hard snap) */
+const story=document.getElementById('story'); let storyIndex=0, storyLock=false, touchY=null;
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+function glideTo(top,ms){
+  const from=story.scrollTop, dist=top-from, t0=performance.now();
+  (function frame(now){
+    const t=Math.min(1,(now-t0)/ms);
+    story.scrollTop=from+dist*ease(t);
+    if(t<1) requestAnimationFrame(frame);
+  })(t0);
+}
+function stepStory(d){
+  if(storyLock) return;
+  const next=Math.max(0,Math.min(story.children.length-1,storyIndex+d));
+  if(next===storyIndex) return;
+  storyIndex=next; storyLock=true;
+  const ms=reduce?1:1300;
+  glideTo(next*story.clientHeight,ms);
+  setTimeout(()=>storyLock=false,ms+80);
+}
+addEventListener('resize',()=>{ story.scrollTop=storyIndex*story.clientHeight; });
+story.addEventListener('wheel',e=>{ e.preventDefault(); if(Math.abs(e.deltaY)>8) stepStory(e.deltaY>0?1:-1); },{passive:false});
+story.addEventListener('touchstart',e=>{ touchY=e.touches[0].clientY; },{passive:true});
+story.addEventListener('touchend',e=>{
+  if(touchY===null) return; const dy=touchY-e.changedTouches[0].clientY; touchY=null;
+  if(Math.abs(dy)>40) stepStory(dy>0?1:-1);
+});
+addEventListener('keydown',e=>{
+  if(!current||current.id!=='letter') return;
+  if(['ArrowDown','PageDown',' '].includes(e.key)){ e.preventDefault(); stepStory(1); }
+  if(['ArrowUp','PageUp'].includes(e.key)){ e.preventDefault(); stepStory(-1); }
+});
+</script>
 </body>
 </html>
