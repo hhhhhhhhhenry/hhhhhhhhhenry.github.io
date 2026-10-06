@@ -21,7 +21,13 @@ a{color:inherit;text-decoration:none}
 h1{font:300 clamp(34px,7vw,64px)/1 Fraunces,Georgia,serif;letter-spacing:.14em}
 .play{width:min(78vw,380px);aspect-ratio:16/10;display:grid;place-items:center;border:1px solid var(--ink);background:var(--bg2);color:var(--ink);cursor:pointer;transition:transform .2s}
 .play:active{transform:scale(.98)}
-.play svg{width:54px;height:54px;fill:currentColor}
+.play{position:relative;overflow:hidden;padding:0}
+.play img,.play canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.play[hidden],.play [hidden]{display:none}
+.play svg{position:relative;width:54px;height:54px;fill:currentColor;filter:drop-shadow(0 1px 6px rgba(0,0,0,.5))}
+.play.has-gif{aspect-ratio:1/1;width:min(64vw,300px);background:#fafafb;border-color:var(--line)}
+.play.has-gif img,.play.has-gif canvas{object-fit:contain}
+.play.has-gif svg{fill:#2b2b2b;opacity:.75;filter:none}
 .name{font:500 22px Fraunces,Georgia,serif;letter-spacing:.3em}
 .bar{width:min(78vw,380px)}
 .bar input{width:100%;accent-color:var(--ink);cursor:pointer}
@@ -54,6 +60,8 @@ section.page h2{font:300 34px Fraunces,Georgia,serif;letter-spacing:.1em;margin-
   <h1 id="title">HAPPY BIRTHDAY</h1>
 
   <button class="play" id="play" aria-label="Play song">
+    <canvas id="still" hidden></canvas>
+    <img id="anim" alt="" hidden>
     <svg id="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
   </button>
 
@@ -97,6 +105,7 @@ section.page h2{font:300 34px Fraunces,Georgia,serif;letter-spacing:.1em;margin-
 const CONFIG = {
   name: "NAME",
   songId: "5rrbVA6zYKI",           // the part after v= in the YouTube link
+  playGif: "play.gif",              // path to your gif (keep play.gif in the same folder as this page; "" = plain play icon)
   photos: [],                       // e.g. ["photos/1.jpg", "photos/2.jpg"]
   videos: [],                       // YouTube IDs like "abc123XYZ" or file paths like "clips/one.mp4"
   letter: "Write your letter here.\n\nBlank lines make new paragraphs."
@@ -139,8 +148,28 @@ const fmt = s => { s = Math.max(0, Math.floor(s || 0)); return String(Math.floor
 const cur = document.getElementById("cur"), dur = document.getElementById("dur"), seek = document.getElementById("seek");
 const icon = document.getElementById("icon"), playBtn = document.getElementById("play");
 const PLAY = "M8 5v14l11-7z", PAUSE = "M6 5h4v14H6zM14 5h4v14h-4z";
-const status = document.getElementById("status");
-if (location.protocol === "file:") status.textContent = "Opened from a file: YouTube may refuse to play. Host the page to be sure.";
+// Gif play button: the first frame is drawn to a canvas (looks paused); the real gif runs while the song plays
+const still = document.getElementById("still"), anim = document.getElementById("anim");
+let gifReady = false;
+if (CONFIG.playGif) {
+  playBtn.classList.add("has-gif");
+  const probe = new Image();
+  probe.onload = () => {
+    still.width = probe.naturalWidth; still.height = probe.naturalHeight;
+    still.getContext("2d").drawImage(probe, 0, 0);
+    gifReady = true; still.hidden = false;
+  };
+  probe.src = CONFIG.playGif;
+}
+function showGif(playing){
+  if (!gifReady) return;
+  still.hidden = playing;
+  anim.hidden = !playing;
+  icon.style.display = playing ? "none" : "";
+  if (playing) { anim.src = ""; anim.src = CONFIG.playGif; } // restarts the gif from its first frame
+}
+const statusEl = document.getElementById("status");
+if (location.protocol === "file:") statusEl.textContent = "Opened from a file: YouTube may refuse to play. Host the page to be sure.";
 let player, dragging = false, ticker;
 
 function onYouTubeIframeAPIReady(){
@@ -148,10 +177,10 @@ function onYouTubeIframeAPIReady(){
     width: 200, height: 200, videoId: CONFIG.songId,
     playerVars: Object.assign({ playsinline: 1, controls: 0, rel: 0 }, location.protocol.startsWith("http") ? { origin: location.origin } : {}),
     events: {
-      onReady: () => { dur.textContent = fmt(player.getDuration()); status.textContent = ""; },
+      onReady: () => { dur.textContent = fmt(player.getDuration()); statusEl.textContent = ""; },
       onError: e => {
         const c = e.data;
-        status.innerHTML = (c === 101 || c === 150)
+        statusEl.innerHTML = (c === 101 || c === 150)
           ? 'The owner of this video blocks playing it on other sites. <a href="https://www.youtube.com/watch?v=' + CONFIG.songId + '" target="_blank" rel="noopener">Open on YouTube</a> or pick another song.'
           : (c === 153 || location.protocol === "file:")
           ? 'YouTube won\'t play from a file on your computer. Host the page (for example on GitHub Pages) and try again. (error ' + c + ')'
@@ -160,6 +189,7 @@ function onYouTubeIframeAPIReady(){
       onStateChange: e => {
         const playing = e.data === YT.PlayerState.PLAYING;
         icon.firstElementChild.setAttribute("d", playing ? PAUSE : PLAY);
+        showGif(playing);
         playBtn.setAttribute("aria-label", playing ? "Pause song" : "Play song");
         dur.textContent = fmt(player.getDuration());
         clearInterval(ticker);
