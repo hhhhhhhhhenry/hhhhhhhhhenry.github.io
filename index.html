@@ -159,6 +159,7 @@ if (CONFIG.playGif) {
     still.getContext("2d").drawImage(probe, 0, 0);
     gifReady = true; still.hidden = false;
   };
+  probe.onerror = () => { statusEl.textContent = "Could not find " + CONFIG.playGif + ". Upload it to the same folder as this page."; };
   probe.src = CONFIG.playGif;
 }
 function showGif(playing){
