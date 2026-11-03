@@ -138,19 +138,21 @@ const CONFIG = {
   fade: { out: 1000, hold: 2000, in: 1500 },   // after the first play click: fade to black, stay black, fade back in (milliseconds)
   songId: "ynpObWVNKVs",   // the part after v= in the YouTube link
   // Photos: src is a path like "photos/1.jpg"; text is the caption, shown only when the photo is clicked and enlarged
+ // Photos: src is a path like "photos/1.jpg"; text is the description shown under it
   photos: [
-    { src: "", text: "Describe this photo here." },
-    { src: "", text: "Where was this? What do you remember?" },
-    { src: "", text: "Add a caption for the third photo." },
-    { src: "", text: "Add a caption for the fourth photo." },
-    { src: "", text: "Add a caption for the fifth photo." }
+    { src: "1.jpeg", text: "Taken in Chicago." },
+    { src: "2.jpeg", text: "Taken in Mexico City" },
+    { src: "3.jpeg", text: "Taken in New York City" },
+    { src: "4.jpeg", text: "Taken in Queens" },
   ],
   // Letter: one paragraph shows at a time; scrolling fades it out and the next one in
   letter: [
-    { title: "Happy birthday", text: "Write the first part of your letter here." },
-    { title: "Chapter two", text: "Write the next part here.\n\nBlank lines make new paragraphs." },
-    { title: "Chapter three", text: "Keep going. Add or remove chapters as you like." },
-    { title: "The end", text: "Write your closing words here.", tweet: "https://x.com/mithkii/status/2101013804045816294?s=46" }   // tweet: paste a tweet link, e.g. "https://x.com/name/status/1234567890" (any paragraph can have one)
+   { title: "Happy Birthday Alazay", text: "I didn’t get a wishlist this year so I had to get creative. A few years ago you told me you did CS and I told you I did HTML on MySpace way back when; I suppose this website is a combination of the two." },
+    { title: "", text: "The pictures are things that for some reason or another remind me of you, some I’ve shown you already. The videos are random things that I wanted to show you. I hope you take the time to go through them all. 
+" },
+    { title: "", text: "I also got you a Walmart gift card. I still haven’t been inside one but I’m told you can get literally anything and everything in it. Hopefully you can use it to get groceries or find something you like for yourself or your dog :)
+" },
+    { title: "", text: "Just want to say that since the first day we first started talking to now, I have thought of you everyday and hoped you’re doing well in school, life and at work.", tweet: "https://x.com/mithkii/status/2101013804045816294?s=46" }   // tweet: paste a tweet link, e.g. "https://x.com/name/status/1234567890" (any paragraph can have one)
   ],
   // Videos: id is the YouTube ID (the part after v=); text is the caption saying why it is here
   videos: []                // e.g. [{ id: "abc123XYZ", text: "Why this video is here." }, { id: "def456UVW", text: "Another reason." }]
