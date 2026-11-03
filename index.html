@@ -83,6 +83,7 @@ h1{font:300 clamp(26px,5vw,46px)/1 Fraunces,Georgia,serif;letter-spacing:.14em;t
 .vgrid iframe,.vgrid .ph{width:100%;aspect-ratio:16/9;border:1px solid var(--line)}
 .vgrid figcaption{margin-top:10px;text-align:center;font:italic 300 17px/1.4 Fraunces,Georgia,serif}
 
+#black{position:fixed;inset:0;z-index:40;background:#000;opacity:0;pointer-events:none;transition:opacity 1s ease}
 #yt{position:fixed;right:0;bottom:0;width:200px;height:200px;opacity:.01;pointer-events:none}
 #msg{position:fixed;left:16px;bottom:14px;z-index:30;font-size:13px;color:var(--mute);max-width:60vw}
 @media (prefers-reduced-motion:reduce){*{transition-duration:.01s!important}.spin{animation-duration:20s}}
@@ -116,6 +117,7 @@ h1{font:300 clamp(26px,5vw,46px)/1 Fraunces,Georgia,serif;letter-spacing:.14em;t
 </div>
 
 <button class="pp" id="pp" aria-label="Play"><span class="spin"><svg class="one" viewBox="0 0 24 24" aria-hidden="true"><path id="ic" d="M8 5v14l11-7z"/></svg></span></button>
+<div id="black"></div>
 <div id="yt"></div>
 <p id="msg" role="status"></p>
 
@@ -123,6 +125,7 @@ h1{font:300 clamp(26px,5vw,46px)/1 Fraunces,Georgia,serif;letter-spacing:.14em;t
 /* ====== EDIT THESE ====== */
 const CONFIG = {
   name: "NAME",
+  fade: { out: 1000, hold: 2000, in: 1500 },   // after the first play click: fade to black, stay black, fade back in (milliseconds)
   songId: "ynpObWVNKVs",   // the part after v= in the YouTube link
   // Photos: src is a path like "photos/1.jpg"; text is the description shown under it
   photos: [
@@ -183,10 +186,13 @@ pp.onclick = () => {
   if (!started) {
     started = true; wantPlay = true;
     if (ready) player.playVideo();
-    pp.classList.add("mini");
-    $("#intro").classList.add("out");
-    $("#home").classList.add("show");
-    setTimeout(() => { $("#intro").hidden = true; }, 1100);
+    const bl = $("#black"), F = CONFIG.fade;
+    bl.style.pointerEvents = "auto";                        // blocks clicks during the fade
+    bl.style.transitionDuration = F.out + "ms"; bl.style.opacity = 1;
+    setTimeout(() => {                                      // fully black: swap the screens behind it
+      $("#intro").hidden = true; pp.classList.add("mini"); $("#home").classList.add("show");
+      setTimeout(() => { bl.style.transitionDuration = F["in"] + "ms"; bl.style.opacity = 0; bl.style.pointerEvents = "none"; }, F.hold);
+    }, F.out);
     return;
   }
   if (!ready) return;
