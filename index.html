@@ -57,7 +57,15 @@ h1{font:300 clamp(26px,5vw,46px)/1 Fraunces,Georgia,serif;letter-spacing:.14em;t
 .pic{width:min(100%,400px);text-align:center;opacity:0;transform:translateY(26px);transition:opacity .9s,transform .9s}
 .pic.in{opacity:1;transform:none}
 .pic img,.pic .ph{width:100%;aspect-ratio:4/5;object-fit:cover;display:grid}
-.pic p{margin-top:12px;font:italic 300 17px/1.4 Fraunces,Georgia,serif}
+.pic{background:none;border:0;padding:0;display:block;cursor:zoom-in}
+#lb{position:fixed;inset:0;z-index:15;background:rgba(0,0,0,.94);display:flex;align-items:center;justify-content:center;padding:56px 18px 130px;opacity:0;transition:opacity .35s;cursor:zoom-out}
+#lb.open{opacity:1}
+#lb[hidden],#lb [hidden]{display:none}
+#lb img{max-width:94vw;max-height:calc(100vh - 190px);max-height:calc(100dvh - 190px);object-fit:contain;transform:scale(.94);transition:transform .35s}
+#lb.open img{transform:none}
+#lb .ph{width:min(80vw,420px);aspect-ratio:4/5}
+#lbc{position:absolute;left:0;right:0;bottom:30px;margin:0 auto;max-width:640px;padding:0 80px;text-align:center;color:#eef5f4;font:italic 300 19px/1.5 Fraunces,Georgia,serif}
+#lbx{position:absolute;top:12px;right:16px;background:none;border:0;color:#eef5f4;font-size:34px;line-height:1;padding:6px 12px}
 
 /* Letter: scroll story */
 .story{position:relative}
@@ -68,6 +76,7 @@ h1{font:300 clamp(26px,5vw,46px)/1 Fraunces,Georgia,serif;letter-spacing:.14em;t
 #view.letter #vc{padding:0;max-width:none}
 .para{position:absolute;left:0;right:0;margin:0 auto;max-width:560px;opacity:0;transition:opacity .5s}
 .para.on{opacity:1;transition:opacity .9s .35s}
+.para .tw{pointer-events:auto;margin:22px auto 0}
 .para h3{font:300 13px Inter,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);margin-bottom:14px}
 .para p{font:300 clamp(19px,2.6vw,25px)/1.7 Fraunces,Georgia,serif;white-space:pre-line}
 .cue{position:fixed;left:0;right:0;bottom:22px;z-index:12;display:flex;justify-content:center;pointer-events:none;transition:opacity .6s}
@@ -117,6 +126,7 @@ h1{font:300 clamp(26px,5vw,46px)/1 Fraunces,Georgia,serif;letter-spacing:.14em;t
 </div>
 
 <button class="pp" id="pp" aria-label="Play"><span class="spin"><svg class="one" viewBox="0 0 24 24" aria-hidden="true"><path id="ic" d="M8 5v14l11-7z"/></svg></span></button>
+<div id="lb" hidden><button id="lbx" aria-label="Close">×</button><img id="lbi" alt=""><div class="ph" id="lbph" hidden>Add photo</div><p id="lbc"></p></div>
 <div id="black"></div>
 <div id="yt"></div>
 <p id="msg" role="status"></p>
@@ -127,19 +137,20 @@ const CONFIG = {
   name: "NAME",
   fade: { out: 1000, hold: 2000, in: 1500 },   // after the first play click: fade to black, stay black, fade back in (milliseconds)
   songId: "ynpObWVNKVs",   // the part after v= in the YouTube link
-  // Photos: src is a path like "photos/1.jpg"; text is the description shown under it
+  // Photos: src is a path like "photos/1.jpg"; text is the caption, shown only when the photo is clicked and enlarged
   photos: [
-    { src: "1.jpeg", text: "Taken in Chicago." },
-    { src: "2.jpeg", text: "Taken in Mexico City" },
-    { src: "3.jpeg", text: "Taken in New York City" },
-    { src: "4.jpeg", text: "Taken in Queens" },
+    { src: "", text: "Describe this photo here." },
+    { src: "", text: "Where was this? What do you remember?" },
+    { src: "", text: "Add a caption for the third photo." },
+    { src: "", text: "Add a caption for the fourth photo." },
+    { src: "", text: "Add a caption for the fifth photo." }
   ],
   // Letter: one paragraph shows at a time; scrolling fades it out and the next one in
   letter: [
     { title: "Happy birthday", text: "Write the first part of your letter here." },
     { title: "Chapter two", text: "Write the next part here.\n\nBlank lines make new paragraphs." },
     { title: "Chapter three", text: "Keep going. Add or remove chapters as you like." },
-    { title: "The end", text: "Write your closing words here." }
+    { title: "The end", text: "Write your closing words here.", tweet: "https://x.com/mithkii/status/2101013804045816294?s=46" }   // tweet: paste a tweet link, e.g. "https://x.com/name/status/1234567890" (any paragraph can have one)
   ],
   // Videos: id is the YouTube ID (the part after v=); text is the caption saying why it is here
   videos: []                // e.g. [{ id: "abc123XYZ", text: "Why this video is here." }, { id: "def456UVW", text: "Another reason." }]
@@ -202,6 +213,22 @@ pp.onclick = () => {
 const view = $("#view"), vc = $("#vc");
 let letterGo = null;
 function clearLetter(){ view.onscroll = view.onwheel = view.ontouchstart = view.ontouchend = null; letterGo = null; view.classList.remove("letter"); }
+function renderTweets(){   // loads X/Twitter's embed script once, then turns the tweet links into embedded tweets
+  const go = () => window.twttr && twttr.widgets && twttr.widgets.load(vc);
+  if (window.twttr && twttr.widgets) return setTimeout(go, 0);
+  if (document.getElementById("twjs")) return;
+  const t = document.createElement("script"); t.id = "twjs"; t.async = true; t.src = "https://platform.twitter.com/widgets.js"; t.onload = go; document.head.append(t);
+}
+const lb = $("#lb"), lbi = $("#lbi"), lbph = $("#lbph"), lbc = $("#lbc");
+function openLb(p){
+  if (p.src) { lbi.src = p.src; lbi.alt = p.text || ""; lbi.hidden = false; lbph.hidden = true; } else { lbi.hidden = true; lbph.hidden = false; }
+  lbc.textContent = p.text || "";
+  lb.hidden = false;
+  requestAnimationFrame(() => requestAnimationFrame(() => lb.classList.add("open")));
+  $("#lbx").focus();
+}
+function closeLb(){ lb.classList.remove("open"); setTimeout(() => { lb.hidden = true; lbi.removeAttribute("src"); }, 350); }
+lb.onclick = closeLb;
 const TITLES = { photos: "Photos", letter: "Letter", videos: "Videos" };
 const io = new IntersectionObserver(es => es.filter(e => e.isIntersecting).forEach((e, j) => { e.target.style.transitionDelay = (j * .4) + "s"; e.target.classList.add("in"); io.unobserve(e.target); }), { root: view, threshold: .2 });
 const el = (tag, cls, txt) => { const n = document.createElement(tag); if (cls) n.className = cls; if (txt) n.textContent = txt; return n; };
@@ -210,9 +237,9 @@ const builders = {
   photos(){
     const w = el("div", "pics");
     CONFIG.photos.forEach(p => {
-      const c = el("figure", "pic");
+      const c = el("button", "pic"); c.type = "button"; c.setAttribute("aria-label", "Enlarge photo");
       if (p.src) { const i = new Image(); i.src = p.src; i.alt = p.text; i.loading = "lazy"; c.append(i); } else c.append(el("div", "ph", "Add photo"));
-      c.append(el("p", "", p.text)); w.append(c); io.observe(c);
+      c.onclick = () => openLb(p); w.append(c); io.observe(c);
     });
     vc.append(w);
   },
@@ -220,7 +247,16 @@ const builders = {
     const n = CONFIG.letter.length; if (!n) return;
     const story = el("div", "story"), stage = el("div", "stage");
     view.classList.add("letter");   // snap scrolling: one hard stop per paragraph
-    const paras = CONFIG.letter.map(c => { const d = el("div", "para"); d.append(el("h3", "", c.title), el("p", "", c.text)); stage.append(d); return d; });
+    const paras = CONFIG.letter.map(c => {
+      const d = el("div", "para"); d.append(el("h3", "", c.title), el("p", "", c.text));
+      if (c.tweet) {   // embedded tweet under this paragraph
+        const bq = el("blockquote", "twitter-tweet tw"), a = el("a");
+        bq.dataset.theme = root.dataset.theme; bq.dataset.width = "420"; bq.dataset.dnt = "true"; bq.dataset.conversation = "none";
+        a.href = c.tweet.split("?")[0].replace("//x.com/", "//twitter.com/"); bq.append(a); d.append(bq);
+      }
+      stage.append(d); return d;
+    });
+    if (CONFIG.letter.some(c => c.tweet)) renderTweets();
     story.append(stage); for (let k = 0; k < n; k++) story.append(el("div", "step")); vc.append(story);
     const cue = el("div", "cue");
     cue.innerHTML = '<button aria-label="Next paragraph"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6l7 7 7-7"/><path d="M5 12l7 7 7-7"/></svg></button>';
@@ -279,6 +315,7 @@ document.querySelectorAll(".box").forEach(b => b.onclick = () => openView(b.data
 $("#back").onclick = closeView;
 addEventListener("keydown", e => {
   if (view.hidden) return;
+  if (!lb.hidden) { if (e.key === "Escape") closeLb(); return; }
   if (e.key === "Escape") closeView();
   else if (letterGo && (e.key === "ArrowDown" || e.key === "PageDown")) { e.preventDefault(); letterGo(1); }
   else if (letterGo && (e.key === "ArrowUp" || e.key === "PageUp")) { e.preventDefault(); letterGo(-1); }
