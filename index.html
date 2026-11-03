@@ -10,209 +10,274 @@
 :root[data-theme="dark"]{--bg:#0d1b1e;--bg2:#142a2e;--ink:#eef5f4;--mute:#8fa9a8;--line:#2a4448}
 :root[data-theme="light"]{--bg:#f3ecdc;--bg2:#e9dfc8;--ink:#2b2418;--mute:#7b6f58;--line:#cfc2a3}
 *{box-sizing:border-box;margin:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--ink);font:400 15px/1.6 Inter,system-ui,sans-serif;transition:background .3s,color .3s}
-a{color:inherit;text-decoration:none}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.6 Inter,system-ui,sans-serif;transition:background .3s,color .3s;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-.theme{position:fixed;top:16px;right:16px;z-index:5;background:none;border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:6px 14px;font:inherit;font-size:13px;cursor:pointer}
+.serif{font-family:Fraunces,Georgia,serif}
+.theme{position:fixed;top:16px;right:16px;z-index:30;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:6px 14px;font-size:13px}
 
-/* Hero */
-.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;padding:72px 20px 40px;text-align:center}
-h1{font:300 clamp(34px,7vw,64px)/1 Fraunces,Georgia,serif;letter-spacing:.14em}
-.play{width:min(78vw,380px);aspect-ratio:16/10;display:grid;place-items:center;border:1px solid var(--ink);background:var(--bg2);color:var(--ink);cursor:pointer;transition:transform .2s}
-.play:active{transform:scale(.98)}
-.play{position:relative;overflow:hidden;padding:0}
-.play img,.play canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.play[hidden],.play [hidden]{display:none}
-.play svg{position:relative;width:54px;height:54px;fill:currentColor;filter:drop-shadow(0 1px 6px rgba(0,0,0,.5))}
-.play.has-gif{aspect-ratio:1/1;width:min(64vw,300px);background:#fafafb;border-color:var(--line)}
-.play.has-gif img,.play.has-gif canvas{object-fit:contain}
-.play.has-gif svg{fill:#2b2b2b;opacity:.75;filter:none}
-.name{font:500 22px Fraunces,Georgia,serif;letter-spacing:.3em}
-.bar{width:min(78vw,380px)}
-.bar input{width:100%;accent-color:var(--ink);cursor:pointer}
-.times{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums;font-size:13px;color:var(--mute)}
-.nav{display:flex;gap:clamp(22px,6vw,56px);font-size:13px;letter-spacing:.2em}
-.nav a{padding:6px 2px;border-bottom:1px solid transparent}
-.nav a:hover{border-color:var(--ink)}
+/* Intro */
+#intro{position:fixed;inset:0;z-index:5;background:var(--bg);transition:opacity 1s}
+#intro.out{opacity:0;pointer-events:none}
+#intro p{position:absolute;top:34%;left:0;right:0;transform:translateY(-50%);text-align:center;padding:0 24px;font:300 clamp(20px,3.2vw,30px)/1.4 Fraunces,Georgia,serif}
+#intro .hint{display:block;margin-top:14px;font:400 12px Inter,sans-serif;letter-spacing:.25em;text-transform:uppercase;color:var(--mute)}
+
+/* Play button: spins on its z axis, then shrinks to the corner */
+.pp{position:fixed;z-index:20;perspective:500px;left:50%;top:62%;width:116px;height:116px;transform:translate(-50%,-50%);border:0;padding:0;background:none;border-radius:50%;transition:left .9s ease,top .9s ease,width .9s ease,height .9s ease}
+.pp.mini{left:calc(100% - 46px);top:calc(100% - 46px);width:56px;height:56px}
+.spin{position:absolute;inset:0;display:grid;place-items:center;animation:spin 5s linear infinite}
+.pp.mini:not(.playing) .spin{animation:none}
+.spin svg{fill:var(--ink);filter:drop-shadow(0 1px 5px rgba(0,0,0,.35))}
+.one{width:60%}
+@keyframes spin{to{transform:rotateY(360deg)}}
+
+/* Home */
+#home{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:64px 24px 40px;opacity:0;visibility:hidden;transition:opacity 1s .5s}
+#home.show{opacity:1;visibility:visible}
+h1{font:300 clamp(26px,5vw,46px)/1 Fraunces,Georgia,serif;letter-spacing:.14em;text-align:center}
+.nm{font:500 16px Fraunces,Georgia,serif;letter-spacing:.3em;margin-bottom:22px}
+.boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,2.5vw,28px);width:min(1000px,100%)}
+.box{height:clamp(240px,50vh,400px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:var(--bg2);border:1px solid var(--line);font-size:13px;letter-spacing:.25em;transition:transform .25s,border-color .25s}
+.box:hover{transform:translateY(-6px);border-color:var(--ink)}
+.box svg{width:60%;max-height:70%}
+.art{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round}
+@media(max-width:720px){#home{justify-content:flex-start;overflow:auto}.boxes{grid-template-columns:1fr}.box{height:150px;flex-direction:row;gap:28px}.box svg{width:96px}}
+
+/* Zoom view */
+#view{position:fixed;inset:0;z-index:10;background:var(--bg);overflow:auto;opacity:0;transform:scale(.9);transition:opacity .45s,transform .45s}
+#view.open{opacity:1;transform:none}
+#view header{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:20px;padding:14px 100px 14px 20px;background:var(--bg)}
+#back{background:none;border:1px solid var(--line);border-radius:99px;padding:6px 16px;font-size:13px}
+#vt{font:300 26px Fraunces,Georgia,serif;letter-spacing:.1em}
+#vc{padding:10px 20px 90px;max-width:1100px;margin:0 auto}
+.ph{display:grid;place-items:center;background:var(--bg2);border:1px solid var(--line);color:var(--mute);font-size:13px}
+
+/* Photos: centered, revealed one by one */
+.pics{display:flex;flex-wrap:wrap;justify-content:center;gap:34px 24px;padding:10px 0 40px}
+.pic{width:min(100%,400px);text-align:center;opacity:0;transform:translateY(26px);transition:opacity .9s,transform .9s}
+.pic.in{opacity:1;transform:none}
+.pic img,.pic .ph{width:100%;aspect-ratio:4/5;object-fit:cover;display:grid}
+.pic p{margin-top:12px;font:italic 300 17px/1.4 Fraunces,Georgia,serif}
+
+/* Letter: scroll story */
+.story{position:relative}
+.stage{position:sticky;top:0;height:100vh;height:100dvh;margin-bottom:-100vh;margin-bottom:-100dvh;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.step{height:100vh;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always}
+#view.letter{overflow:hidden}
+#view.letter header{position:fixed;left:0;right:0;top:0}
+#view.letter #vc{padding:0;max-width:none}
+.para{position:absolute;left:0;right:0;margin:0 auto;max-width:560px;opacity:0;transition:opacity .5s}
+.para.on{opacity:1;transition:opacity .9s .35s}
+.para h3{font:300 13px Inter,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:var(--mute);margin-bottom:14px}
+.para p{font:300 clamp(19px,2.6vw,25px)/1.7 Fraunces,Georgia,serif;white-space:pre-line}
+.cue{position:fixed;left:0;right:0;bottom:22px;z-index:12;display:flex;justify-content:center;pointer-events:none;transition:opacity .6s}
+.cue.gone{opacity:0}
+.cue button{pointer-events:auto;background:none;border:0;color:var(--ink);padding:10px 20px}
+.cue.gone button{pointer-events:none}
+.cue svg{animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0);opacity:.45}50%{transform:translateY(9px);opacity:1}}
+
+/* Videos */
+.vgrid{display:flex;flex-wrap:wrap;justify-content:center;gap:18px}
+.vgrid>*{width:min(100%,480px)}
+.vgrid iframe,.vgrid .ph{width:100%;aspect-ratio:16/9;border:1px solid var(--line)}
+.vgrid figcaption{margin-top:10px;text-align:center;font:italic 300 17px/1.4 Fraunces,Georgia,serif}
+
 #yt{position:fixed;right:0;bottom:0;width:200px;height:200px;opacity:.01;pointer-events:none}
-.status{font-size:13px;color:var(--mute);max-width:380px;min-height:1.6em}
-.status a{text-decoration:underline}
-
-/* Sections */
-section.page{min-height:100svh;padding:90px 22px 60px;max-width:900px;margin:0 auto}
-section.page h2{font:300 34px Fraunces,Georgia,serif;letter-spacing:.1em;margin-bottom:28px}
-.top{display:inline-block;margin-top:36px;color:var(--mute);font-size:13px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-.grid img,.ph{width:100%;aspect-ratio:3/4;object-fit:cover;background:var(--bg2);border:1px solid var(--line)}
-.ph{display:grid;place-items:center;color:var(--mute);font-size:13px}
-.letter{font:300 19px/1.8 Fraunces,Georgia,serif;max-width:560px;white-space:pre-line}
-.vids{display:grid;gap:16px}
-.vids iframe,.vids video{width:100%;aspect-ratio:16/9;border:1px solid var(--line);background:var(--bg2)}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
+#msg{position:fixed;left:16px;bottom:14px;z-index:30;font-size:13px;color:var(--mute);max-width:60vw}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01s!important}.spin{animation-duration:20s}}
 </style>
 </head>
 <body>
 
 <button class="theme" id="theme" aria-label="Switch between dark and light mode">Light mode</button>
 
-<header class="hero" id="top">
-  <h1 id="title">HAPPY BIRTHDAY</h1>
+<div id="intro"><p>For the full experience,<br>view this on a laptop with headphones.<span class="hint">Press play to begin</span></p></div>
 
-  <button class="play" id="play" aria-label="Play song">
-    <canvas id="still" hidden></canvas>
-    <img id="anim" alt="" hidden>
-    <svg id="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-  </button>
-
-  <div class="name" id="name">NAME</div>
-
-  <div class="bar">
-    <input type="range" id="seek" min="0" max="100" value="0" step="0.1" aria-label="Song position">
-    <div class="times"><span id="cur">00:00</span><span id="dur">00:00</span></div>
+<main id="home">
+  <h1>HAPPY BIRTHDAY</h1>
+  <div class="nm" id="nm"></div>
+  <div class="boxes">
+    <button class="box" data-k="photos" aria-label="Open photos">
+      <svg viewBox="0 0 120 140" aria-hidden="true"><g transform="rotate(-5 60 70)"><rect x="14" y="10" width="92" height="116" rx="3" fill="#fff" stroke="var(--ink)" stroke-width="2"/><rect x="22" y="18" width="76" height="76" fill="var(--bg2)" stroke="var(--ink)" stroke-width="2"/><circle cx="76" cy="38" r="8" fill="var(--mute)"/><path d="M22 94L50 58L68 78L80 66L98 94Z" fill="var(--ink)" opacity=".55"/></g></svg>
+    </button>
+    <button class="box" data-k="letter" aria-label="Open letter">
+      <svg viewBox="0 0 140 110" aria-hidden="true"><rect class="art" x="10" y="20" width="120" height="80" rx="4" fill="var(--bg)"/><path class="art" d="M10 24L70 66L130 24"/><path class="art" opacity=".5" d="M10 98L52 58M130 98L88 58"/><circle cx="70" cy="66" r="5" fill="var(--mute)"/></svg>
+    </button>
+    <button class="box" data-k="videos" aria-label="Open videos">
+      <svg viewBox="0 0 140 110" aria-hidden="true"><circle class="art" cx="36" cy="24" r="14" fill="var(--bg)"/><circle class="art" cx="68" cy="24" r="14" fill="var(--bg)"/><rect class="art" x="10" y="38" width="88" height="56" rx="8" fill="var(--bg)"/><path class="art" d="M98 56L130 40V90L98 74Z" fill="var(--bg)"/><circle class="art" cx="54" cy="66" r="14"/><circle cx="54" cy="66" r="4" fill="var(--mute)"/></svg>
+    </button>
   </div>
-  <p class="status" id="status" role="status"></p>
+</main>
 
-  <nav class="nav">
-    <a href="#photos">PHOTOS</a>
-    <a href="#letter">LETTER</a>
-    <a href="#videos">VIDEOS</a>
-  </nav>
-</header>
+<div id="view" hidden>
+  <header><button id="back">← Back</button><h2 id="vt"></h2></header>
+  <div id="vc"></div>
+</div>
 
-<section class="page" id="photos">
-  <h2>Photos</h2>
-  <div class="grid" id="photoGrid"></div>
-  <a class="top" href="#top">Back to top</a>
-</section>
-
-<section class="page" id="letter">
-  <h2>Letter</h2>
-  <p class="letter" id="letterText"></p>
-  <a class="top" href="#top">Back to top</a>
-</section>
-
-<section class="page" id="videos">
-  <h2>Videos</h2>
-  <div class="vids" id="videoList"></div>
-  <a class="top" href="#top">Back to top</a>
-</section>
-
+<button class="pp" id="pp" aria-label="Play"><span class="spin"><svg class="one" viewBox="0 0 24 24" aria-hidden="true"><path id="ic" d="M8 5v14l11-7z"/></svg></span></button>
 <div id="yt"></div>
+<p id="msg" role="status"></p>
 
 <script>
 /* ====== EDIT THESE ====== */
 const CONFIG = {
   name: "NAME",
-  songId: "5rrbVA6zYKI",           // the part after v= in the YouTube link
-  playGif: "play.gif",              // path to your gif (keep play.gif in the same folder as this page; "" = plain play icon)
-  photos: [],                       // e.g. ["photos/1.jpg", "photos/2.jpg"]
-  videos: [],                       // YouTube IDs like "abc123XYZ" or file paths like "clips/one.mp4"
-  letter: "Write your letter here.\n\nBlank lines make new paragraphs."
+  songId: "ynpObWVNKVs",   // the part after v= in the YouTube link
+  // Photos: src is a path like "photos/1.jpg"; text is the description shown under it
+  photos: [
+    { src: "", text: "Describe this photo here." },
+    { src: "", text: "Where was this? What do you remember?" },
+    { src: "", text: "Add a caption for the third photo." },
+    { src: "", text: "Add a caption for the fourth photo." },
+    { src: "", text: "Add a caption for the fifth photo." }
+  ],
+  // Letter: one paragraph shows at a time; scrolling fades it out and the next one in
+  letter: [
+    { title: "Happy birthday", text: "Write the first part of your letter here." },
+    { title: "Chapter two", text: "Write the next part here.\n\nBlank lines make new paragraphs." },
+    { title: "Chapter three", text: "Keep going. Add or remove chapters as you like." },
+    { title: "The end", text: "Write your closing words here." }
+  ],
+  // Videos: id is the YouTube ID (the part after v=); text is the caption saying why it is here
+  videos: []                // e.g. [{ id: "abc123XYZ", text: "Why this video is here." }, { id: "def456UVW", text: "Another reason." }]
 };
 /* ======================== */
 
-document.getElementById("name").textContent = CONFIG.name;
-document.getElementById("letterText").textContent = CONFIG.letter;
+const $ = s => document.querySelector(s);
+$("#nm").textContent = CONFIG.name;
 
-// Photos
-const grid = document.getElementById("photoGrid");
-if (CONFIG.photos.length) {
-  CONFIG.photos.forEach(src => { const i = new Image(); i.src = src; i.alt = ""; i.loading = "lazy"; grid.append(i); });
-} else {
-  for (let n = 0; n < 6; n++) { const d = document.createElement("div"); d.className = "ph"; d.textContent = "Add photo"; grid.append(d); }
-}
-
-// Videos
-const list = document.getElementById("videoList");
-if (CONFIG.videos.length) {
-  CONFIG.videos.forEach(v => {
-    let el;
-    if (/\.(mp4|webm|mov)$/i.test(v)) { el = document.createElement("video"); el.src = v; el.controls = true; }
-    else { el = document.createElement("iframe"); el.src = "https://www.youtube.com/embed/" + v; el.allowFullscreen = true; el.loading = "lazy"; }
-    list.append(el);
-  });
-} else {
-  const d = document.createElement("div"); d.className = "ph"; d.style.aspectRatio = "16/9"; d.textContent = "Add a video"; list.append(d);
-}
-
-// Theme (starts with the device setting, remembers the choice if the browser allows)
-const root = document.documentElement, tbtn = document.getElementById("theme");
+/* Theme */
+const root = document.documentElement, tbtn = $("#theme");
 function setTheme(t){ root.dataset.theme = t; tbtn.textContent = t === "dark" ? "Light mode" : "Dark mode"; try{localStorage.setItem("theme", t)}catch(e){} }
 let saved = null; try{ saved = localStorage.getItem("theme") }catch(e){}
-setTheme(saved || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark"));
+setTheme(saved || "dark");   // dark unless the visitor has switched to light before
 tbtn.onclick = () => setTheme(root.dataset.theme === "dark" ? "light" : "dark");
 
-// YouTube player
-const fmt = s => { s = Math.max(0, Math.floor(s || 0)); return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0"); };
-const cur = document.getElementById("cur"), dur = document.getElementById("dur"), seek = document.getElementById("seek");
-const icon = document.getElementById("icon"), playBtn = document.getElementById("play");
+/* Music */
+const pp = $("#pp"), ic = $("#ic"), msg = $("#msg");
 const PLAY = "M8 5v14l11-7z", PAUSE = "M6 5h4v14H6zM14 5h4v14h-4z";
-// Gif play button: the first frame is drawn to a canvas (looks paused); the real gif runs while the song plays
-const still = document.getElementById("still"), anim = document.getElementById("anim");
-let gifReady = false;
-if (CONFIG.playGif) {
-  playBtn.classList.add("has-gif");
-  const probe = new Image();
-  probe.onload = () => {
-    still.width = probe.naturalWidth; still.height = probe.naturalHeight;
-    still.getContext("2d").drawImage(probe, 0, 0);
-    gifReady = true; still.hidden = false;
-  };
-  probe.onerror = () => { statusEl.textContent = "Could not find " + CONFIG.playGif + ". Upload it to the same folder as this page."; };
-  probe.src = CONFIG.playGif;
-}
-function showGif(playing){
-  if (!gifReady) return;
-  still.hidden = playing;
-  anim.hidden = !playing;
-  icon.style.display = playing ? "none" : "";
-  if (playing) { anim.src = ""; anim.src = CONFIG.playGif; } // restarts the gif from its first frame
-}
-const statusEl = document.getElementById("status");
-if (location.protocol === "file:") statusEl.textContent = "Opened from a file: YouTube may refuse to play. Host the page to be sure.";
-let player, dragging = false, ticker;
+let player, ready = false, started = false, wantPlay = false;
+if (location.protocol === "file:") msg.textContent = "Opened from a file: YouTube may refuse to play. Use the hosted link.";
 
 function onYouTubeIframeAPIReady(){
   player = new YT.Player("yt", {
     width: 200, height: 200, videoId: CONFIG.songId,
     playerVars: Object.assign({ playsinline: 1, controls: 0, rel: 0 }, location.protocol.startsWith("http") ? { origin: location.origin } : {}),
     events: {
-      onReady: () => { dur.textContent = fmt(player.getDuration()); statusEl.textContent = ""; },
-      onError: e => {
-        const c = e.data;
-        statusEl.innerHTML = (c === 101 || c === 150)
-          ? 'The owner of this video blocks playing it on other sites. <a href="https://www.youtube.com/watch?v=' + CONFIG.songId + '" target="_blank" rel="noopener">Open on YouTube</a> or pick another song.'
-          : (c === 153 || location.protocol === "file:")
-          ? 'YouTube won\'t play from a file on your computer. Host the page (for example on GitHub Pages) and try again. (error ' + c + ')'
-          : 'The song could not load. (error ' + c + ')';
-      },
+      onReady: () => { ready = true; if (wantPlay) player.playVideo(); },
       onStateChange: e => {
-        const playing = e.data === YT.PlayerState.PLAYING;
-        icon.firstElementChild.setAttribute("d", playing ? PAUSE : PLAY);
-        showGif(playing);
-        playBtn.setAttribute("aria-label", playing ? "Pause song" : "Play song");
-        dur.textContent = fmt(player.getDuration());
-        clearInterval(ticker);
-        if (playing) ticker = setInterval(tick, 250);
-      }
+        const playing = e.data === 1;
+        ic.setAttribute("d", playing ? PAUSE : PLAY);
+        pp.classList.toggle("playing", playing);
+        pp.setAttribute("aria-label", playing ? "Pause music" : "Play music");
+        if (playing) msg.textContent = "";
+      },
+      onError: e => { msg.textContent = (e.data === 101 || e.data === 150) ? "This song can’t be played on other sites. Try another link." : "The song could not load (error " + e.data + ")."; }
     }
   });
 }
-function tick(){
-  if (dragging) return;
-  const d = player.getDuration(), t = player.getCurrentTime();
-  cur.textContent = fmt(t);
-  if (d) seek.value = (t / d) * 100;
-}
-playBtn.onclick = () => {
-  if (!player || !player.getPlayerState) return;
-  player.getPlayerState() === YT.PlayerState.PLAYING ? player.pauseVideo() : player.playVideo();
-};
-seek.addEventListener("input", () => { dragging = true; cur.textContent = fmt(player.getDuration() * seek.value / 100); });
-seek.addEventListener("change", () => { player.seekTo(player.getDuration() * seek.value / 100, true); dragging = false; });
+const yts = document.createElement("script"); yts.src = "https://www.youtube.com/iframe_api"; document.head.append(yts);
 
-const s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api"; document.head.append(s);
+pp.onclick = () => {
+  if (!started) {
+    started = true; wantPlay = true;
+    if (ready) player.playVideo();
+    pp.classList.add("mini");
+    $("#intro").classList.add("out");
+    $("#home").classList.add("show");
+    setTimeout(() => { $("#intro").hidden = true; }, 1100);
+    return;
+  }
+  if (!ready) return;
+  player.getPlayerState() === 1 ? player.pauseVideo() : player.playVideo();
+};
+
+/* Zoom views */
+const view = $("#view"), vc = $("#vc");
+let letterGo = null;
+function clearLetter(){ view.onscroll = view.onwheel = view.ontouchstart = view.ontouchend = null; letterGo = null; view.classList.remove("letter"); }
+const TITLES = { photos: "Photos", letter: "Letter", videos: "Videos" };
+const io = new IntersectionObserver(es => es.filter(e => e.isIntersecting).forEach((e, j) => { e.target.style.transitionDelay = (j * .4) + "s"; e.target.classList.add("in"); io.unobserve(e.target); }), { root: view, threshold: .2 });
+const el = (tag, cls, txt) => { const n = document.createElement(tag); if (cls) n.className = cls; if (txt) n.textContent = txt; return n; };
+
+const builders = {
+  photos(){
+    const w = el("div", "pics");
+    CONFIG.photos.forEach(p => {
+      const c = el("figure", "pic");
+      if (p.src) { const i = new Image(); i.src = p.src; i.alt = p.text; i.loading = "lazy"; c.append(i); } else c.append(el("div", "ph", "Add photo"));
+      c.append(el("p", "", p.text)); w.append(c); io.observe(c);
+    });
+    vc.append(w);
+  },
+  letter(){
+    const n = CONFIG.letter.length; if (!n) return;
+    const story = el("div", "story"), stage = el("div", "stage");
+    view.classList.add("letter");   // snap scrolling: one hard stop per paragraph
+    const paras = CONFIG.letter.map(c => { const d = el("div", "para"); d.append(el("h3", "", c.title), el("p", "", c.text)); stage.append(d); return d; });
+    story.append(stage); for (let k = 0; k < n; k++) story.append(el("div", "step")); vc.append(story);
+    const cue = el("div", "cue");
+    cue.innerHTML = '<button aria-label="Next paragraph"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6l7 7 7-7"/><path d="M5 12l7 7 7-7"/></svg></button>';
+    vc.append(cue);
+    let cur = -1;
+    const upd = () => {
+      const i = Math.min(n - 1, Math.max(0, Math.round(view.scrollTop / (view.clientHeight || innerHeight))));
+      if (i === cur) return; cur = i;
+      paras.forEach((d, j) => d.classList.toggle("on", j === i));   // old paragraph fades out, then the next fades in
+      cue.classList.toggle("gone", i === n - 1);                    // arrow stays until the last paragraph
+    };
+    view.onscroll = upd; upd();
+    // Paging: every wheel flick, swipe or key press moves exactly one paragraph, then waits for the motion to settle
+    let until = 0, y0 = 0;
+    const go = d => {
+      const now = Date.now();
+      if (now < until) { until = Math.max(until, now + 250); return; }   // still settling (also swallows trackpad momentum)
+      const i = Math.min(n - 1, Math.max(0, cur + d));
+      if (i === cur) return;
+      until = now + 800;
+      view.scrollTo({ top: i * view.clientHeight, behavior: "smooth" });
+    };
+    letterGo = go;
+    cue.firstChild.onclick = () => go(1);   // the arrow is a button too
+    view.onwheel = e => { if (Math.abs(e.deltaY) > 2) go(e.deltaY > 0 ? 1 : -1); };
+    view.ontouchstart = e => { y0 = e.touches[0].clientY; };
+    view.ontouchend = e => { const dy = y0 - e.changedTouches[0].clientY; if (Math.abs(dy) > 40) go(dy > 0 ? 1 : -1); };
+  },
+  videos(){
+    const g = el("div", "vgrid");
+    const list = CONFIG.videos.length ? CONFIG.videos : [null, null, null, null];
+    list.forEach(v => {
+      const f = el("figure"), id = v && (v.id || v), text = v ? (v.text || "") : "Add a caption explaining why this video is here.";
+      if (id) { const i = el("iframe"); i.src = "https://www.youtube.com/embed/" + id; i.allow = "encrypted-media; picture-in-picture; fullscreen"; i.allowFullscreen = true; i.loading = "lazy"; i.title = text || "Video"; f.append(i); }
+      else f.append(el("div", "ph", "Add a video"));
+      if (text) f.append(el("figcaption", "", text));
+      g.append(f);
+    });
+    vc.append(g);
+  }
+};
+
+function openView(k, box){
+  const r = box.getBoundingClientRect();
+  view.style.transformOrigin = (r.left + r.width / 2) + "px " + (r.top + r.height / 2) + "px";
+  clearLetter(); vc.innerHTML = ""; $("#vt").textContent = TITLES[k]; builders[k](); view.scrollTop = 0;
+  view.hidden = false; view.scrollTop = 0; if (view.onscroll) view.onscroll();   // always start at the top
+  requestAnimationFrame(() => requestAnimationFrame(() => view.classList.add("open")));
+  $("#back").focus();
+}
+function closeView(){
+  view.classList.remove("open");
+  setTimeout(() => { view.scrollTop = 0; view.hidden = true; vc.innerHTML = ""; clearLetter(); }, 450);   // also stops any playing video
+}
+document.querySelectorAll(".box").forEach(b => b.onclick = () => openView(b.dataset.k, b));
+$("#back").onclick = closeView;
+addEventListener("keydown", e => {
+  if (view.hidden) return;
+  if (e.key === "Escape") closeView();
+  else if (letterGo && (e.key === "ArrowDown" || e.key === "PageDown")) { e.preventDefault(); letterGo(1); }
+  else if (letterGo && (e.key === "ArrowUp" || e.key === "PageUp")) { e.preventDefault(); letterGo(-1); }
+});
 </script>
 </body>
 </html>
