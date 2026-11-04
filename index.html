@@ -102,7 +102,7 @@ h1{font:300 clamp(26px,5vw,46px)/1 Fraunces,Georgia,serif;letter-spacing:.14em;t
 
 <button class="theme" id="theme" aria-label="Switch between dark and light mode">Light mode</button>
 
-<div id="intro"><p>For the full experience,<br>view this on a laptop with headphones.<span class="hint">Press play to begin</span></p></div>
+<div id="intro"><p>Please view this on a laptop with headphones.<span class="hint">Press play to begin</span></p></div>
 
 <main id="home">
   <h1>HAPPY BIRTHDAY</h1>
@@ -178,19 +178,20 @@ const PLAY = "M8 5v14l11-7z", PAUSE = "M6 5h4v14H6zM14 5h4v14h-4z";
 let player, ready = false, started = false, wantPlay = false;
 if (location.protocol === "file:") msg.textContent = "Opened from a file: YouTube may refuse to play. Use the hosted link.";
 
+const syncState = st => {   // rotation, icon and label follow the real player state (playing or buffering = playing)
+  const playing = st === 1 || st === 3;
+  ic.setAttribute("d", playing ? PAUSE : PLAY);
+  pp.classList.toggle("playing", playing);
+  pp.setAttribute("aria-label", playing ? "Pause music" : "Play music");
+  if (st === 1) msg.textContent = "";
+};
 function onYouTubeIframeAPIReady(){
   player = new YT.Player("yt", {
     width: 200, height: 200, videoId: CONFIG.songId,
     playerVars: Object.assign({ playsinline: 1, controls: 0, rel: 0 }, location.protocol.startsWith("http") ? { origin: location.origin } : {}),
     events: {
-      onReady: () => { ready = true; if (wantPlay) player.playVideo(); },
-      onStateChange: e => {
-        const playing = e.data === 1;
-        ic.setAttribute("d", playing ? PAUSE : PLAY);
-        pp.classList.toggle("playing", playing);
-        pp.setAttribute("aria-label", playing ? "Pause music" : "Play music");
-        if (playing) msg.textContent = "";
-      },
+      onReady: () => { ready = true; if (wantPlay) player.playVideo(); setInterval(() => syncState(player.getPlayerState()), 500); },
+      onStateChange: e => syncState(e.data),
       onError: e => { msg.textContent = (e.data === 101 || e.data === 150) ? "This song can’t be played on other sites. Try another link." : "The song could not load (error " + e.data + ")."; }
     }
   });
@@ -211,7 +212,7 @@ pp.onclick = () => {
     return;
   }
   if (!ready) return;
-  player.getPlayerState() === 1 ? player.pauseVideo() : player.playVideo();
+  [1, 3].includes(player.getPlayerState()) ? player.pauseVideo() : player.playVideo();
 };
 
 /* Zoom views */
