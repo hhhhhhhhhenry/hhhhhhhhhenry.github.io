@@ -26,7 +26,6 @@ button{font:inherit;color:inherit;cursor:pointer}
 .pp{position:fixed;z-index:20;perspective:500px;left:50%;top:62%;width:116px;height:116px;transform:translate(-50%,-50%);border:0;padding:0;background:none;border-radius:50%;transition:left .9s ease,top .9s ease,width .9s ease,height .9s ease}
 .pp.mini{left:calc(100% - 46px);top:calc(100% - 46px);width:56px;height:56px}
 .spin{position:absolute;inset:0;display:grid;place-items:center;animation:spin 5s linear infinite}
-.pp.mini:not(.playing) .spin{animation:none}
 .spin svg{fill:var(--ink);filter:drop-shadow(0 1px 5px rgba(0,0,0,.35))}
 .one{width:60%}
 @keyframes spin{to{transform:rotateY(360deg)}}
